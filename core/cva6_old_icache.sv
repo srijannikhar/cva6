@@ -1031,33 +1031,13 @@ module cva6
         .clk_i (clk_i),
         .rst_ni(rst_ni),
 
-        .icache_enable_i   (dcache_en_csr_nbdcache),
-        .icache_flush_i    (dcache_flush_ctrl_cache),
-        .icache_flush_ack_o(dcache_flush_ack_cache_ctrl),
-        .icache_miss_o     (dcache_miss_cache_perf),
-
-        .icache_amo_req_i (amo_req),
-        .icache_amo_resp_o(amo_resp),
-
-        .icache_cmo_req_i ('0  /*FIXME*/),
-        .icache_cmo_resp_o(  /*FIXME*/),
-
-        .icache_req_ports_i(dcache_req_to_cache),
-        .icache_req_ports_o(dcache_req_from_cache),
-
-        .icache_wbuffer_empty_o (dcache_commit_wbuffer_empty),
-        .icache_wbuffer_not_ni_o(dcache_commit_wbuffer_not_ni),
-
-        .icache_hwpf_base_set_i    ('0  /*FIXME*/),
-        .icache_hwpf_base_i        ('0  /*FIXME*/),
-        .icache_hwpf_base_o        (  /*FIXME*/),
-        .icache_hwpf_param_set_i   ('0  /*FIXME*/),
-        .icache_hwpf_param_i       ('0  /*FIXME*/),
-        .icache_hwpf_param_o       (  /*FIXME*/),
-        .icache_hwpf_throttle_set_i('0  /*FIXME*/),
-        .icache_hwpf_throttle_i    ('0  /*FIXME*/),
-        .icache_hwpf_throttle_o    (  /*FIXME*/),
-        .icache_hwpf_status_o      (  /*FIXME*/),
+        .icache_en_i   (icache_en_csr),
+        .icache_flush_i(icache_flush_ctrl_cache),
+        .icache_miss_o (icache_miss_cache_perf),
+        .icache_areq_i (icache_areq_ex_cache),
+        .icache_areq_o (icache_areq_cache_ex),
+        .icache_dreq_i (icache_dreq_if_cache),
+        .icache_dreq_o (icache_dreq_cache_if),
 
         .dcache_enable_i   (dcache_en_csr_nbdcache),
         .dcache_flush_i    (dcache_flush_ctrl_cache),
@@ -1090,7 +1070,7 @@ module cva6
         .noc_req_o (noc_req_o),
         .noc_resp_i(noc_resp_i)
     );
-assign inval_ready = 1'b1;
+    assign inval_ready = 1'b1;
   end else begin : gen_cache_wb
     std_cache_subsystem #(
         // note: this only works with one cacheable region
