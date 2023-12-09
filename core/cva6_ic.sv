@@ -973,7 +973,7 @@ module cva6
     dcache_req_ports_cache_ex[2].data_gnt &= dcache_req_ports_ex_cache[2].data_req;
     dcache_req_ports_cache_acc[1].data_gnt &= !dcache_req_ports_ex_cache[2].data_req;
   end
-/*
+
   if (DCACHE_TYPE == int'(config_pkg::WT)) begin : gen_cache_wt
     // this is a cache subsystem that is compatible with OpenPiton
     wt_cache_subsystem #(
@@ -1015,9 +1015,7 @@ module cva6
         .inval_valid_i     (inval_valid),
         .inval_ready_o     (inval_ready)
     );
-    end
-    */
-  if (1) begin : gen_cache_hpd
+  end else if (DCACHE_TYPE == int'(config_pkg::HPDCACHE)) begin : gen_cache_hpd
     cva6_hpdcache_subsystem #(
         .CVA6Cfg   (CVA6ExtendCfg),
         .NumPorts  (NumPorts),
@@ -1029,47 +1027,14 @@ module cva6
         .clk_i (clk_i),
         .rst_ni(rst_ni),
 
-        // old icache signals
-        // .icache_en_i   (icache_en_csr),
-        // .icache_flush_i(icache_flush_ctrl_cache),
-        // .icache_miss_o (icache_miss_cache_perf),
-        // .icache_areq_i (icache_areq_ex_cache),
-        // .icache_areq_o (icache_areq_cache_ex),
-        // .icache_dreq_i (icache_dreq_if_cache),
-        // .icache_dreq_o (icache_dreq_cache_if),
+        .icache_en_i   (icache_en_csr),
+        .icache_flush_i(icache_flush_ctrl_cache),
+        .icache_miss_o (icache_miss_cache_perf),
+        .icache_areq_i (icache_areq_ex_cache),
+        .icache_areq_o (icache_areq_cache_ex),
+        .icache_dreq_i (icache_dreq_if_cache),
+        .icache_dreq_o (icache_dreq_cache_if),
 
-        // hicache signals
-        .icache_enable_i   (icache_en_csr),
-        .icache_flush_i    (icache_flush_ctrl_cache),
-        .icache_flush_ack_o(),
-        .icache_miss_o     (icache_miss_cache_perf),
-
-        // amo disabled
-        .icache_amo_req_i ('0),
-        .icache_amo_resp_o(),
-
-        .icache_cmo_req_i ('0  /*FIXME*/),
-        .icache_cmo_resp_o(  /*FIXME*/),
-
-        .icache_req_ports_i(icache_dreq_if_cache),
-        .icache_req_ports_o(icache_dreq_cache_if),
-        
-        // write buffer not used for icache
-        .icache_wbuffer_empty_o (),
-        .icache_wbuffer_not_ni_o(),
-
-        .icache_hwpf_base_set_i    ('0  /*FIXME*/),
-        .icache_hwpf_base_i        ('0  /*FIXME*/),
-        .icache_hwpf_base_o        (  /*FIXME*/),
-        .icache_hwpf_param_set_i   ('0  /*FIXME*/),
-        .icache_hwpf_param_i       ('0  /*FIXME*/),
-        .icache_hwpf_param_o       (  /*FIXME*/),
-        .icache_hwpf_throttle_set_i('0  /*FIXME*/),
-        .icache_hwpf_throttle_i    ('0  /*FIXME*/),
-        .icache_hwpf_throttle_o    (  /*FIXME*/),
-        .icache_hwpf_status_o      (  /*FIXME*/),
-
-        // hpdcache signals
         .dcache_enable_i   (dcache_en_csr_nbdcache),
         .dcache_flush_i    (dcache_flush_ctrl_cache),
         .dcache_flush_ack_o(dcache_flush_ack_cache_ctrl),
@@ -1101,11 +1066,8 @@ module cva6
         .noc_req_o (noc_req_o),
         .noc_resp_i(noc_resp_i)
     );
-   
     assign inval_ready = 1'b1;
-  end 
-  
-  /* else begin : gen_cache_wb
+  end else begin : gen_cache_wb
     std_cache_subsystem #(
         // note: this only works with one cacheable region
         // not as important since this cache subsystem is about to be
@@ -1150,7 +1112,7 @@ module cva6
     assign dcache_commit_wbuffer_not_ni = 1'b1;
     assign inval_ready                  = 1'b1;
   end
-*/
+
   // ----------------
   // Accelerator
   // ----------------
